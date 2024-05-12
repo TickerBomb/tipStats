@@ -12,6 +12,7 @@ import model.DegenPoints
 import model.DegenTipStats
 import model.User
 
+val myToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoiNjY0MGRmYmViOWIzZjkwMTljZTFhNTE0IiwiaXNFeHRlcm5hbCI6ZmFsc2UsInNpZ25lcklkIjoiNTAwMTY5In0sImlhdCI6MTcxNTUyNzYxNX0.7UGcZFer_4FSiraFCgl25VO688ZT46_th2UMcqMgJ1c"
 class NetworkRepository(private val httpClient: HttpClient) {
     fun getUser(fid: String) = flow {
         runCatching {
@@ -26,7 +27,7 @@ class NetworkRepository(private val httpClient: HttpClient) {
             .onFailure { emit(Result.Error(it)) }
     }
 
-    fun getCasts(fid: String, limit: Int = 10, cursor: String = "") = flow {
+    fun getCasts(fid: String, limit: Int = 100, cursor: String = "") = flow {
         runCatching {
             httpClient.get("https://build.far.quest/farcaster/v2/casts") {
                 headers {

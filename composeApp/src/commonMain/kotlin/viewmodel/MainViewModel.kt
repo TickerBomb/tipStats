@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -32,8 +33,12 @@ class MainViewModel(
 ) {
     private val _uiState = MutableStateFlow(MainUiState())
 
-    val fid = preferences.getFid()
-    val userFlow = fid.flatMapConcat {
+    val fid = preferences.getFid().stateIn(
+        coroutinesComponent.applicationScope,
+        started = SharingStarted.Lazily,
+        initialValue = ""
+    )
+    val userFlow = fid.filterNot { it.isEmpty() }.flatMapConcat {
         logger.info { "fid is $it" }
         networkRepository.getUser(it)
     }
@@ -44,7 +49,7 @@ class MainViewModel(
         .filter { it.isSuccess() }
         .map { it.get()!! }
 
-    val degenTipStatsFlow = fid.flatMapConcat {
+    val degenTipStatsFlow = fid.filterNot { it.isEmpty() }.flatMapConcat {
         networkRepository.getDegenTipStats(it)
     }.map {
         when (it) {
@@ -62,18 +67,34 @@ class MainViewModel(
         }
     }
 
-    val castsByFidFlow = fid.flatMapConcat {
+    val myWrittenCastsByFidFlow = fid.filterNot { it.isEmpty() }.flatMapConcat {
         networkRepository.getCasts(it)
     }.map {
         when (it) {
             is Result.Success -> it.data.result.casts
             else -> emptyList()
         }
+    }.map {
+        it.filter { it.author.fid == fid.value }
     }
 
-    val uiState = combine(userFlow, degenTipStatsFlow, degenPointsFlow, castsByFidFlow) { user, degenTipStats, degenPoints, casts ->
-        MainUiState(user = user, casts = casts, degenTipStats = degenTipStats, points = degenPoints.points)
-    }.stateIn(coroutinesComponent.applicationScope, started = SharingStarted.WhileSubscribed(1000), initialValue = MainUiState.Empty)
+    val uiState = combine(
+        userFlow,
+        degenTipStatsFlow,
+        degenPointsFlow,
+        myWrittenCastsByFidFlow
+    ) { user, degenTipStats, degenPoints, casts ->
+        MainUiState(
+            user = user,
+            casts = casts,
+            degenTipStats = degenTipStats,
+            points = degenPoints.points
+        )
+    }.stateIn(
+        coroutinesComponent.applicationScope,
+        started = SharingStarted.WhileSubscribed(1000),
+        initialValue = MainUiState.Empty
+    )
 
     fun test() {
         CoroutineScope(Dispatchers.IO).launch {
