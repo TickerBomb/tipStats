@@ -1,0 +1,5 @@
+/build
+.idea
+composeApp/build
+.gradle
+local.properties
