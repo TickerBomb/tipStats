@@ -30,12 +30,12 @@ import model.DegenTipStats
 
 @Composable
 fun UserInfo(modifier: Modifier = Modifier, user: User, degenTipStats: DegenTipStats, points: String) {
-//    val model = ImageRequest.Builder(PlatformContext.INSTANCE).data(user.pfp.url).build()
+    val model = ImageRequest.Builder(PlatformContext.INSTANCE).data(user.pfp.url).build()
     Row(modifier = modifier) {
 
         AsyncImage(
             modifier = Modifier.size(50.dp).clip(CircleShape),
-            model = null,
+            model = model,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
