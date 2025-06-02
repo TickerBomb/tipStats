@@ -23,9 +23,9 @@ import model.User
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import model.DegenTipStats
-import org.jetbrains.skia.Bitmap
 
 
 @Composable
