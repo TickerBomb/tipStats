@@ -23,19 +23,19 @@ import model.User
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import model.DegenTipStats
-import org.jetbrains.skia.Bitmap
 
 
 @Composable
 fun UserInfo(modifier: Modifier = Modifier, user: User, degenTipStats: DegenTipStats, points: String) {
-    val model = ImageRequest.Builder(PlatformContext.INSTANCE).data(user.pfp.url).build()
+//    val model = ImageRequest.Builder(PlatformContext.INSTANCE).data(user.pfp.url).build()
     Row(modifier = modifier) {
 
         AsyncImage(
             modifier = Modifier.size(50.dp).clip(CircleShape),
-            model = model,
+            model = null,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
