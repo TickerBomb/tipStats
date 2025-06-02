@@ -13,11 +13,7 @@ data class Cast(
     val parentAuthor: Author? = Author(),
     val timestamp: Long = 0L,
     val channel: Channel? = Channel()
-//    val childrenCasts: List<Cast> = emptyList()
-) {
-    @SerialName("childCast")
-    var childCast: Cast? = null
-}
+)
 
 
 @Serializable
